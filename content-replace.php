@@ -48,7 +48,6 @@ function cr_replace1()
 	if ($res && is_array($res))
 	{
 		$count = $res[2];
-//		var_dump($count);
 		echo '<p>Replaced<br/><strong>'.$res[0].'</strong><br/>with<br/><strong>'.$res[1].'</strong></p>';
 		echo '<ul>';
 			echo '<li>posts.post_content: <strong>'.$count[0].'</strong></li>';
@@ -89,10 +88,6 @@ function cr_do_replace()
 	if (!is_array($_POST) || !count($_POST))
 		return false;
 
-//	if (get_magic_quotes_gpc())
-//		array_walk($_POST, 'stripslashes');
-//var_dump($_POST);
-
 	$find = stripslashes($_POST['find']);
 	$replace = stripslashes($_POST['replace']);
 
@@ -123,8 +118,6 @@ function cr_do_replace()
 	}
 	update_option('widget_text', $widgets);
 	$count[] = $cnt;
-	
-//var_dump($wpdb->queries);
 
 	return array($find, $replace, $count);
 }
