@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Content Replace
-Plugin URI: http://agachi.name/#content-replace
+Plugin URI: http://github.com/avaly/content-replace
 Description: Content replace functions for all content areas
 Version: 1.1
 Author: Valentin Agachi
