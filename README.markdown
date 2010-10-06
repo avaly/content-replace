@@ -8,3 +8,4 @@ It will perform the find and replace operation on the following:
 + table: *posts* - field: *guid*
 + table: *postmeta* - field: *meta_value*
 + content of *text widgets*
++ any other database table and field you choose

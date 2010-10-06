@@ -3,7 +3,7 @@
 Plugin Name: Content Replace
 Plugin URI: http://github.com/avaly/content-replace
 Description: Content replace functions for all content areas
-Version: 1.1
+Version: 1.2
 Author: Valentin Agachi
 Author URI: http://agachi.name
 License: GPL2
@@ -54,6 +54,9 @@ function cr_replace1()
 			echo '<li>posts.guid: <strong>'.$count[1].'</strong></li>';
 			echo '<li>postmeta.meta_value: <strong>'.$count[2].'</strong></li>';
 			echo '<li>widgets.text: <strong>'.$count[3].'</strong></li>';
+			if (isset($count[4]) && is_array($count[4]))
+				foreach ($count[4] as $key => $cnt)
+					echo '<li>'.$key.': <strong>'.$cnt.'</strong></li>';
 		echo '</ul><br/>';
 	}
 
@@ -64,16 +67,25 @@ function cr_replace1()
 		<tbody>
 			<tr>
 				<th>Find this text</th>
-				<td><input type="text" class="text" name="find" value="<?php echo htmlentities($_POST['find']); ?>" size="70"/></td>
+				<td><input type="text" class="text" name="find" value="<?php echo (!empty($_POST['find']) ? htmlentities($_POST['find']) : ''); ?>" size="70"/></td>
 			</tr>
 			<tr>
 				<th>Replace with text</th>
-				<td><input type="text" class="text" name="replace" value="<?php echo htmlentities($_POST['replace']); ?>" size="70"/></td>
+				<td><input type="text" class="text" name="replace" value="<?php echo (!empty($_POST['replace']) ? htmlentities($_POST['replace']) : ''); ?>" size="70"/></td>
+			</tr>
+			<tr>
+				<th>Extra replacement locations</th>
+				<td>
+					<textarea name="extra" rows="3" cols="30"><?php echo (!empty($_POST['extra']) ? htmlentities($_POST['extra']) : ''); ?></textarea><br/>
+					<p class="description">Include extra locations to perform the string replacement, each line in the following syntax: <b>TABLE.FIELD</b></p>
+				</td>
 			</tr>
 		</tbody>
 		</table>
 		<p class="submit"><input type="submit" class="button-primary" value="Replace Content"/></p>
 	</form>
+
+	<p class="created" style="text-align:right"><em>Created by <a href="http://agachi.name/">Valentin Agachi</a></em></p>
 
 	</div>
 <?php
@@ -118,6 +130,24 @@ function cr_do_replace()
 	}
 	update_option('widget_text', $widgets);
 	$count[] = $cnt;
+
+	// extra table.field
+	if (!empty($_POST['extra']))
+	{
+		$cnt = array();
+
+		$extra = explode("\n", str_replace("\r", '', trim(stripslashes($_POST['extra']))));
+
+		foreach ($extra as $line)
+		{
+			if (!preg_match('~^([^\.]+)\.([^\.]+)$~', $line, $match))
+				continue;
+	
+			$cnt[$line] = $wpdb->query('UPDATE '.$match[1].' SET '.$match[2].'=REPLACE('.$match[2].', \''.$findq.'\', \''.$replaceq.'\')');		
+		}
+
+		$count[4] = $cnt;
+	}
 
 	return array($find, $replace, $count);
 }
